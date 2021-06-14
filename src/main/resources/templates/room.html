@@ -1,0 +1,51 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <title>Classroom - Members</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css"/>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.min.js"></script>
+</head>
+<body>
+<nav>
+    <div class="navbar navbar-dark bg-dark shadow-sm">
+        <div class="container">
+            <li class="nav-item dropdown">
+                <p class="nav-link dropdown-toggle" id="dropdown01" data-bs-toggle="dropdown" aria-expanded="false">
+                    Actions</p>
+                <ul class="dropdown-menu" aria-labelledby="dropdown04">
+                    <li><a class="dropdown-item" href="raiseHand"
+                           th:text="${user.isHand()} ? 'Raise hand down' : 'Raise hand up'"></a></li>
+                </ul>
+            </li>
+            <li class="nav-item dropdown">
+                <p class="nav-link dropdown-toggle" id="dropdown02" data-bs-toggle="dropdown" aria-expanded="false"
+                   th:text="${user.getLogin()}"></p>
+                <ul class="dropdown-menu" aria-labelledby="dropdown04">
+                    <li><a class="dropdown-item" href="logout">Logout</a></li>
+                </ul>
+            </li>
+        </div>
+    </div>
+</nav>
+<main class="flex-shrink-0" style="height: 84vh; overflow: scroll; ">
+    <div class="album py-3 bg-light">
+        <div class="container" style="padding: 0 0 15px;">
+            <div style="margin: auto; width: max-content;">
+                <p>Class members</p>
+                <table border="1px" style="padding: 5px 10px; border-collapse: inherit; background: white">
+                    <tr th:each="student : ${students}">
+                        <td th:text="${student.login}" style="padding: 10px 0"></td>
+                        <td style="padding: 0 30px 0 50px;"><img th:if="${student.hand}" src="images/hand.png"
+                                                                                         alt="hand"
+                                                                                         height="25px"/></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</main>
+<div th:insert="footer :: footer"
+     style="background: #212529!important; position: fixed; width: 100%; left: 0; bottom: 0;"></div>
+</body>
+</html>
