@@ -2,14 +2,10 @@ package com.softarex.test.classroom.controller;
 
 import com.softarex.test.classroom.model.Student;
 import com.softarex.test.classroom.repo.StudentRepository;
-import com.sun.deploy.net.HttpResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.StreamingHttpOutputMessage;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,18 +13,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.net.ServerSocket;
-import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -75,7 +63,8 @@ public class MainController {
 
     @CrossOrigin(origins = "http://localhost:4200")
     @GetMapping("/studentsList")
-    public @ResponseBody List<Student> getStudents() {
+    public @ResponseBody
+    List<Student> getStudents() {
         List<Student> studentList = new ArrayList<>();
         studentRepository.findAll().forEach(studentList::add);
         Comparator<Student> comparator = Comparator.comparing(Student::getLogin);
@@ -85,7 +74,8 @@ public class MainController {
 
     @CrossOrigin(origins = "http://localhost:4200")
     @PostMapping("/user")
-    public @ResponseBody Student getUser(@RequestBody String login){
+    public @ResponseBody
+    Student getUser(@RequestBody String login) {
         Optional<Student> user = studentRepository.findById(login);
         return user.orElse(null);
     }
