@@ -1,9 +1,7 @@
 package com.softarex.test.classroom.controller;
 
 import com.softarex.test.classroom.model.Student;
-import com.softarex.test.classroom.repo.StudentRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.softarex.test.classroom.service.MainService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -16,68 +14,91 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
 
+/**
+ * Main controller to handle urls
+ *
+ * @author Elmax19
+ * @version 1.0
+ */
 @RestController
 public class MainController {
-    private static final Logger LOGGER = LoggerFactory.getLogger(MainController.class);
+    /**
+     * domain url of frontend
+     */
+    private static final String DOMAIN = "http://localhost:4200";
+    /**
+     * {@link MainService} class to call
+     */
     @Autowired
-    private StudentRepository studentRepository;
+    MainService ms;
 
-    @CrossOrigin(origins = "http://localhost:4200")
+    /**
+     * method to handle changing student hand status
+     *
+     * @param login user login
+     * @return {@link HttpStatus#OK} if student information was updated, otherwise - {@link HttpStatus#EXPECTATION_FAILED}
+     * @see MainService#changeHandStatus(String login)
+     */
+    @CrossOrigin(origins = DOMAIN)
     @PutMapping("/raiseHand/{login}")
     public HttpStatus riseHand(@PathVariable String login) {
-        LOGGER.info("changing hand status!");
-        Optional<Student> user = studentRepository.findById(login);
-        if (user.isPresent()) {
-            Student student = user.get();
-            student.setHandUp(!student.isHand());
-            studentRepository.save(student);
+        if (ms.changeHandStatus(login)) {
             return HttpStatus.OK;
         }
         return HttpStatus.EXPECTATION_FAILED;
     }
 
-    @CrossOrigin(origins = "http://localhost:4200")
+    /**
+     * method to handle student logout
+     *
+     * @param login student login
+     * @see MainService#deleteStudent(String login)
+     */
+    @CrossOrigin(origins = DOMAIN)
     @DeleteMapping("/logout/{login}")
     public void logout(@PathVariable String login) {
-        LOGGER.info("hi");
-        LOGGER.info(login);
-        Optional<Student> user = studentRepository.findById(login);
-        if (user.isPresent()) {
-            Student student = user.get();
-            studentRepository.delete(student);
-        }
+        ms.deleteStudent(login);
     }
 
-    @CrossOrigin(origins = "http://localhost:4200")
+    /**
+     * method to handle student login
+     *
+     * @param login student login
+     * @see MainService#addStudent(String login)
+     */
+    @CrossOrigin(origins = DOMAIN)
     @PostMapping("/login")
-    public void postLogin(@RequestBody String login, HttpServletRequest request) {
-        Student user = new Student(login, false);
-        studentRepository.save(user);
+    public void postLogin(@RequestBody String login) {
+        ms.addStudent(login);
     }
 
-    @CrossOrigin(origins = "http://localhost:4200")
+    /**
+     * method to handle url of getting list of students
+     *
+     * @return all logged in students
+     * @see MainService#findAllStudents()
+     */
+    @CrossOrigin(origins = DOMAIN)
     @GetMapping("/studentsList")
     public @ResponseBody
     List<Student> getStudents() {
-        List<Student> studentList = new ArrayList<>();
-        studentRepository.findAll().forEach(studentList::add);
-        Comparator<Student> comparator = Comparator.comparing(Student::getLogin);
-        studentList.sort(comparator);
-        return studentList;
+        return ms.findAllStudents();
     }
 
-    @CrossOrigin(origins = "http://localhost:4200")
+    /**
+     * method to handle url of finding current student
+     *
+     * @param login student login
+     * @return searched student
+     * @see MainService#findStudentByLogin(String login)
+     */
+    @CrossOrigin(origins = DOMAIN)
     @PostMapping("/user")
     public @ResponseBody
     Student getUser(@RequestBody String login) {
-        Optional<Student> user = studentRepository.findById(login);
-        return user.orElse(null);
+        return ms.findStudentByLogin(login).orElse(null);
     }
 
 }
